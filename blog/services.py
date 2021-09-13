@@ -1,11 +1,23 @@
 import grpc
-from google.protobuf import empty_pb2
-from django_grpc_framework.services import Service
+#from google.protobuf import empty_pb2
+#from django_grpc_framework.services import Service
 from blog.models import Post
 from blog.serializers import PostProtoSerializer
 
+from django_grpc_framework import mixins
+from django_grpc_framework import generics
 
-class PostService(Service):
+
+class PostService(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  mixins.RetrieveModelMixin,
+                  mixins.UpdateModelMixin,
+                  mixins.DestroyModelMixin,
+                  generics.GenericService):
+    queryset = Post.objects.all()
+    serializer_class = PostProtoSerializer
+
+'''class PostService(Service):
     def List(self, request, context):
         posts = Post.objects.all()
         serializer = PostProtoSerializer(posts, many=True)
@@ -39,4 +51,4 @@ class PostService(Service):
     def Destroy(self, request, context):
         post = self.get_object(request.id)
         post.delete()
-        return empty_pb2.Empty()
+        return empty_pb2.Empty()'''
